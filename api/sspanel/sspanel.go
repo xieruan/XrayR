@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Misaka-blog/XrayR/api"
+	"github.com/xieruan/XrayR/api"
 	"github.com/go-resty/resty/v2"
 )
 
@@ -183,7 +183,7 @@ func (c *APIClient) GetNodeInfo() (nodeInfo *api.NodeInfo, err error) {
 		nodeInfo, err = c.ParseSSPanelNodeInfo(nodeInfoResponse)
 		if err != nil {
 			res, _ := json.Marshal(nodeInfoResponse)
-			return nil, fmt.Errorf("Parse node info failed: %s, \nError: %s, \nPlease check the doc of custom_config for help: https://crackair.gitbook.io/Misaka-blog/dui-jie-sspanel/sspanel/sspanel_custom_config", string(res), err)
+			return nil, fmt.Errorf("Parse node info failed: %s, \nError: %s, \nPlease check the doc of custom_config for help: https://crackair.gitbook.io/xieruan/dui-jie-sspanel/sspanel/sspanel_custom_config", string(res), err)
 		}
 	} else {
 		switch c.NodeType {
@@ -318,7 +318,7 @@ func (c *APIClient) ReportUserTraffic(userTraffic *[]api.UserTraffic) error {
 }
 
 // GetNodeRule will pull the audit rule form sspanel
-func (c *APIClient) GetNodeRule() (*[]api.DetectRule, *[]string, error) {
+func (c *APIClient) GetNodeRule() (*[]api.DetectRule, error) {
 	ruleList := c.LocalRuleList
 	path := "/mod_mu/func/detect_rules"
 	res, err := c.client.R().
@@ -328,13 +328,13 @@ func (c *APIClient) GetNodeRule() (*[]api.DetectRule, *[]string, error) {
 
 	response, err := c.parseResponse(res, path, err)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	ruleListResponse := new([]RuleItem)
 
 	if err := json.Unmarshal(response.Data, ruleListResponse); err != nil {
-		return nil, nil, fmt.Errorf("Unmarshal %s failed: %s", reflect.TypeOf(ruleListResponse), err)
+		return nil, fmt.Errorf("Unmarshal %s failed: %s", reflect.TypeOf(ruleListResponse), err)
 	}
 
 	for _, r := range *ruleListResponse {
@@ -343,7 +343,7 @@ func (c *APIClient) GetNodeRule() (*[]api.DetectRule, *[]string, error) {
 			Pattern: regexp.MustCompile(r.Content),
 		})
 	}
-	return &ruleList, nil, nil
+	return &ruleList, nil
 }
 
 // ReportIllegal reports the user illegal behaviors

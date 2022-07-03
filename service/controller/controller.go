@@ -7,9 +7,9 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/Misaka-blog/XrayR/api"
-	"github.com/Misaka-blog/XrayR/common/legocmd"
-	"github.com/Misaka-blog/XrayR/common/serverstatus"
+	"github.com/xieruan/XrayR/api"
+	"github.com/xieruan/XrayR/common/legocmd"
+	"github.com/xieruan/XrayR/common/serverstatus"
 	"github.com/xtls/xray-core/common/protocol"
 	"github.com/xtls/xray-core/common/task"
 	"github.com/xtls/xray-core/core"
@@ -74,20 +74,11 @@ func (c *Controller) Start() error {
 	}
 	// Add Rule Manager
 	if !c.config.DisableGetRule {
-		if ruleList, protocolRule, err := c.apiClient.GetNodeRule(); err != nil {
+		if ruleList, err := c.apiClient.GetNodeRule(); err != nil {
 			log.Printf("Get rule list filed: %s", err)
-		} else {
-			if len(*ruleList) > 0 {
-				if err := c.UpdateRule(c.Tag, *ruleList); err != nil {
-					log.Print(err)
-				}
-			}
-			if protocolRule != nil {
-				if len(*protocolRule) != 0 {
-					if err := c.UpdateProtocolRule(c.Tag, *protocolRule); err != nil {
-						log.Print(err)
-					}
-				}
+		} else if len(*ruleList) > 0 {
+			if err := c.UpdateRule(c.Tag, *ruleList); err != nil {
+				log.Print(err)
 			}
 		}
 	}
@@ -183,20 +174,11 @@ func (c *Controller) nodeInfoMonitor() (err error) {
 
 	// Check Rule
 	if !c.config.DisableGetRule {
-		if ruleList, protocolRule, err := c.apiClient.GetNodeRule(); err != nil {
+		if ruleList, err := c.apiClient.GetNodeRule(); err != nil {
 			log.Printf("Get rule list filed: %s", err)
-		} else {
-			if len(*ruleList) > 0 {
-				if err := c.UpdateRule(c.Tag, *ruleList); err != nil {
-					log.Print(err)
-				}
-			}
-			if protocolRule != nil {
-				if len(*protocolRule) != 0 {
-					if err := c.UpdateProtocolRule(c.Tag, *protocolRule); err != nil {
-						log.Print(err)
-					}
-				}
+		} else if len(*ruleList) > 0 {
+			if err := c.UpdateRule(c.Tag, *ruleList); err != nil {
+				log.Print(err)
 			}
 		}
 	}

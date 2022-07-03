@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Misaka-blog/XrayR/api"
-	"github.com/Misaka-blog/XrayR/app/mydispatcher"
+	"github.com/xieruan/XrayR/api"
+	"github.com/xieruan/XrayR/app/mydispatcher"
 	"github.com/xtls/xray-core/common/protocol"
 	"github.com/xtls/xray-core/core"
 	"github.com/xtls/xray-core/features/inbound"
@@ -138,12 +138,6 @@ func (c *Controller) AddInboundLimiter(tag string, nodeSpeedLimit uint64, userLi
 func (c *Controller) UpdateInboundLimiter(tag string, updatedUserList *[]api.UserInfo) error {
 	dispather := c.server.GetFeature(routing.DispatcherType()).(*mydispatcher.DefaultDispatcher)
 	err := dispather.Limiter.UpdateInboundLimiter(tag, updatedUserList)
-	return err
-}
-
-func (c *Controller) UpdateProtocolRule(tag string, newRuleList []string) error {
-	dispather := c.server.GetFeature(routing.DispatcherType()).(*mydispatcher.DefaultDispatcher)
-	err := dispather.RuleManager.UpdateProtocolRule(tag, newRuleList)
 	return err
 }
 

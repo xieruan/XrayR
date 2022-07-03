@@ -3,8 +3,8 @@ package v2board_test
 import (
 	"testing"
 
-	"github.com/Misaka-blog/XrayR/api"
-	"github.com/Misaka-blog/XrayR/api/v2board"
+	"github.com/xieruan/XrayR/api"
+	"github.com/xieruan/XrayR/api/v2board"
 )
 
 func CreateClient() api.API {
@@ -92,10 +92,10 @@ func TestReportReportUserTraffic(t *testing.T) {
 func TestGetNodeRule(t *testing.T) {
 	client := CreateClient()
 	client.Debug()
-	ruleList, protocolRule, err := client.GetNodeRule()
+	ruleList, err := client.GetNodeRule()
 	if err != nil {
 		t.Error(err)
 	}
 
-	t.Log(ruleList, protocolRule)
+	t.Log(ruleList)
 }

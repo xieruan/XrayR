@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Misaka-blog/XrayR/api"
+	"github.com/xieruan/XrayR/api"
 	"github.com/bitly/go-simplejson"
 	"github.com/go-resty/resty/v2"
 )
@@ -266,35 +266,25 @@ func (c *APIClient) ReportUserTraffic(userTraffic *[]api.UserTraffic) error {
 }
 
 // GetNodeRule implements the API interface
-func (c *APIClient) GetNodeRule() (*[]api.DetectRule, *[]string, error) {
+func (c *APIClient) GetNodeRule() (*[]api.DetectRule, error) {
 	ruleList := c.LocalRuleList
 	if c.NodeType != "V2ray" {
-		return &ruleList, nil, nil
+		return &ruleList, nil
 	}
 
 	// V2board only support the rule for v2ray
 	// fix: reuse config response
 	c.access.Lock()
 	defer c.access.Unlock()
-	rulesLen := len(c.ConfigResp.Get("routing").Get("rules").MustArray())
-	if rulesLen >= 2 {
-		ruleListResponse := c.ConfigResp.Get("routing").Get("rules").GetIndex(1).Get("domain").MustStringArray()
-		for i, rule := range ruleListResponse {
-			ruleListItem := api.DetectRule{
-				ID:      i,
-				Pattern: regexp.MustCompile(rule),
-			}
-			ruleList = append(ruleList, ruleListItem)
+	ruleListResponse := c.ConfigResp.Get("routing").Get("rules").GetIndex(1).Get("domain").MustStringArray()
+	for i, rule := range ruleListResponse {
+		ruleListItem := api.DetectRule{
+			ID:      i,
+			Pattern: regexp.MustCompile(rule),
 		}
+		ruleList = append(ruleList, ruleListItem)
 	}
-	var protocolRule []string
-	if rulesLen >= 3 {
-		ruleListResponse := c.ConfigResp.Get("routing").Get("rules").GetIndex(2).Get("domain").MustStringArray()
-		for _, r := range ruleListResponse {
-			protocolRule = append(protocolRule, r)
-		}
-	}
-	return &ruleList, &protocolRule, nil
+	return &ruleList, nil
 }
 
 // ReportNodeStatus implements the API interface
